@@ -75,10 +75,11 @@ Kryteria akceptacji:
 
 - ID: US-006
   Tytuł: Wizualizacja osi czasu
-  Opis: Jako użytkownik chcę widzieć oś czasu z Pull Requestami jako poziome paski, aby szybko ocenić historię aktywności dewelopera.
+  Opis: Jako użytkownik chcę widzieć interaktywną oś czasu, gdzie Pull Requesty są prezentowane jako dynamiczne wykresy tworzone przy użyciu biblioteki Chart.js, aby szybko ocenić historię aktywności dewelopera.
   Kryteria akceptacji:
-    - Oś czasu prezentuje PR jako poziome paski.
-    - Każdy pasek odpowiada PR i posiada wyraźne oznaczenie statusu (otwarty, zmergowany, anulowany).
+    - Oś czasu prezentuje PR jako dynamiczne wykresy generowane przy użyciu Chart.js.
+    - Każdy pasek reprezentuje PR i posiada wyraźne oznaczenie statusu (otwarty, zmergowany, anulowany).
+    - Po najechaniu kursorem na wykres, wyświetla się tooltip z dodatkowymi informacjami o PR.
     - Aktualny punkt na osi jest wyróżniony.
     - Oś zawiera oznaczenia czasowe dla ważnych zdarzeń.
 

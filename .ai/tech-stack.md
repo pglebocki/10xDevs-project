@@ -4,6 +4,7 @@
 - **React** – zapewnia interaktywność tam, gdzie jest potrzebna.
 - **TypeScript** – zapewnia statyczne typowanie kodu i lepsze wsparcie IDE.
 - **Tailwind 4** – umożliwia wygodne stylowanie aplikacji.
+- **Chart.js** – używana do generowania interaktywnych diagramów osi czasu PR z obsługą tooltipów.
 
 ## Backend
 - **Supabase** – wykorzystywane wyłącznie do autentykacji użytkownika (szybkie logowanie i zarządzanie sesjami); w przyszłości planowane przejście na rozwiązanie oparte o hosting na GitHub Pages.
