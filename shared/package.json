@@ -1,0 +1,13 @@
+{
+  "name": "10xdevs-shared",
+  "version": "0.1.0",
+  "description": "Shared types and utilities for 10xDevs Dashboard",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+} 

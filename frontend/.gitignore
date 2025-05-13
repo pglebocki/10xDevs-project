@@ -1,0 +1,17 @@
+# Vite/React specific
+*.local
+
+# Generated files
+/node_modules
+dist
+dist-ssr
+
+# Caches
+.cache
+.mf
+.rollup.cache
+tsconfig.tsbuildinfo
+
+# Testing
+coverage
+storybook-static 

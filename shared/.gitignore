@@ -1,0 +1,11 @@
+# TypeScript specific
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log 
