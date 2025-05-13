@@ -8,6 +8,7 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
 ## 3. Wymagania funkcjonalne
 1. Lista statycznych repozytoriów - system powinien wyświetlać listę repozytoriów wraz z nazwą i URL.
 2. Wybór dewelopera - użytkownik powinien móc wybrać dewelopera z listy przypisanej do danego repozytorium.
+3. Serwis musi mieć mozliwość wyswietlanie roznych metryk. Na MVP wystarczy 1 metryka tj. wizualizacja pull requestów, ale musi być mozliwosc zmiany widoku w UI na inną metrykę.
 3. Oś czasu - wizualizacja Pull Requestów jako poziome paski z oznaczeniem statusu:
    - Otwarte
    - Zmergowane
@@ -20,6 +21,8 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
 7. Interfejs użytkownika:
    - Wyświetlanie progress baru podczas pobierania danych.
    - Obsługa błędów z wyświetleniem czytelnych komunikatów.
+8. Podstawowy system uwierzytelniania i kont użytkowników:
+   - Rejestracja i logowanie.
 
 ## 4. Granice produktu
 1. MVP nie obejmuje zaawansowanych metryk analitycznych.
@@ -30,7 +33,23 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
 
 ## 5. Historyjki użytkowników
 
-- ID: US-001
+ID: US-001
+Tytuł: Rejestracja konta
+Opis: Jako nowy użytkownik chcę się zarejestrować, aby mieć dostęp do serwisu i móc korzystać z generowania raportów
+Kryteria akceptacji:
+- Formularz rejestracyjny zawiera pola na adres e-mail i hasło.
+- Po poprawnym wypełnieniu formularza i weryfikacji danych konto jest aktywowane.
+- Użytkownik otrzymuje potwierdzenie pomyślnej rejestracji i zostaje zalogowany.
+
+ID: US-002
+Tytuł: Logowanie do aplikacji
+Opis: Jako zarejestrowany użytkownik chcę móc się zalogować, aby mieć dostęp do serwisu
+Kryteria akceptacji:
+- Po podaniu prawidłowych danych logowania użytkownik zostaje przekierowany do widoku wyboru repozytorium
+- Błędne dane logowania wyświetlają komunikat o nieprawidłowych danych.
+- Dane dotyczące logowania przechowywane są w bezpieczny sposób.
+
+- ID: US-003
   Tytuł: Wybór repozytorium
   Opis: Jako użytkownik chcę zobaczyć statyczną listę repozytoriów, aby wybrać źródło danych do analizy aktywności.
   Kryteria akceptacji:
@@ -38,7 +57,7 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
     - Repozytoria są wyświetlane w czytelnej formie.
     - Wybór repozytorium aktualizuje dostępne dane dla kolejnych operacji.
 
-- ID: US-002
+- ID: US-004
   Tytuł: Wybór dewelopera
   Opis: Jako użytkownik chcę wybrać dewelopera powiązanego z wybranym repozytorium, aby móc zobaczyć jego aktywność.
   Kryteria akceptacji:
@@ -46,7 +65,15 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
     - Wybór dewelopera powoduje aktualizację osi czasu z PR.
     - Lista deweloperów jest czytelna i intuicyjna.
 
-- ID: US-003
+- ID: US-005
+  Tytuł: Wybór widoku metryki
+  Opis: Jako użytkownik chcę mieć mozliwosć przełączania się pomiedzy roznymi metrykami. 
+  Kryteria akceptacji:
+    - Dla MVP wystarczy 1 metryka (Os czasu PR)
+    - Istnieje przełącznik w UI do wybory innych metryk
+    - 2 metryka powinna zostaca dodana jako pusta strona
+
+- ID: US-006
   Tytuł: Wizualizacja osi czasu
   Opis: Jako użytkownik chcę widzieć oś czasu z Pull Requestami jako poziome paski, aby szybko ocenić historię aktywności dewelopera.
   Kryteria akceptacji:
@@ -55,7 +82,7 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
     - Aktualny punkt na osi jest wyróżniony.
     - Oś zawiera oznaczenia czasowe dla ważnych zdarzeń.
 
-- ID: US-004
+- ID: US-007
   Tytuł: Wyświetlanie szczegółów PR
   Opis: Jako użytkownik chcę, aby po najechaniu kursorem na element osi czasu, wyświetlane były dodatkowe informacje o danym PR, takie jak użytkownik, identyfikator komentarza lub approval.
   Kryteria akceptacji:
@@ -63,7 +90,7 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
     - Informacje w tooltipie obejmują dane o użytkowniku oraz identyfikatory komentarzy/approval.
     - Tooltip nie zakłóca funkcjonalności interfejsu.
 
-- ID: US-005
+- ID: US-008
   Tytuł: Integracja z GitHub REST API i mechanizm cachowania
   Opis: Jako użytkownik chcę, aby system pobierał dane z GitHub REST API i cachował je, aby zapewnić szybki dostęp i aktualność informacji.
   Kryteria akceptacji:
@@ -72,7 +99,7 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
     - Automatyczne odświeżanie danych odbywa się według ustalonego interwału.
     - W przypadku błędu pobierania danych wyświetlany jest komunikat o błędzie.
 
-- ID: US-006
+- ID: US-009
   Tytuł: Uwierzytelnianie i bezpieczny dostęp
   Opis: Jako użytkownik chcę bezpiecznie logować się do aplikacji, aby chronić dane przed nieautoryzowanym dostępem.
   Kryteria akceptacji:
@@ -81,7 +108,7 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
     - Sesja użytkownika jest zarządzana i wygasa po ustalonym czasie nieaktywności.
     - Dane są zabezpieczone przed nieautoryzowanym dostępem.
 
-- ID: US-007
+- ID: US-010
   Tytuł: Obsługa stanu ładowania i błędów
   Opis: Jako użytkownik chcę widzieć wskaźnik ładowania oraz odpowiednie komunikaty o błędach, aby być świadomym stanu systemu podczas pobierania danych.
   Kryteria akceptacji:
