@@ -1,8 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GitFork, Star, Code } from 'lucide-react';
-import Card, { CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../ui/Card';
-import Button from '../ui/Button';
+import Card, { CardContent, CardHeader, CardTitle, CardDescription } from '../ui/Card';
 import Badge from '../ui/Badge';
 import { Repository } from '../../data/mockData';
 
@@ -19,14 +18,11 @@ const RepositoryCard: React.FC<RepositoryCardProps> = ({
 }) => {
   const navigate = useNavigate();
   
-  const handleViewDevelopers = () => {
-    navigate(`/repositories/${repository.id}/developers`);
-  };
-  
-  const handleSelect = () => {
+  const handleClick = () => {
     if (onSelect) {
       onSelect(repository.id);
     }
+    navigate(`/repositories/${repository.id}/developers`);
   };
   
   return (
@@ -34,8 +30,8 @@ const RepositoryCard: React.FC<RepositoryCardProps> = ({
       hoverable 
       selectable={!!onSelect}
       selected={selected}
-      onClick={onSelect ? handleSelect : undefined}
-      className="h-full transition-transform transform hover:scale-[1.01]"
+      onClick={handleClick}
+      className="h-full transition-transform transform hover:scale-[1.01] cursor-pointer"
     >
       <CardHeader>
         <div className="flex items-start justify-between">
@@ -77,20 +73,6 @@ const RepositoryCard: React.FC<RepositoryCardProps> = ({
           </div>
         </div>
       </CardContent>
-      
-      <CardFooter>
-        <Button 
-          variant="secondary" 
-          size="sm" 
-          onClick={(e) => {
-            e.stopPropagation();
-            handleViewDevelopers();
-          }}
-          fullWidth
-        >
-          View Developers
-        </Button>
-      </CardFooter>
     </Card>
   );
 };

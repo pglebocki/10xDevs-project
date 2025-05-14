@@ -1,19 +1,9 @@
 import React from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { LogOut, BarChart, Users, GitBranch, Activity } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { Outlet, Link } from 'react-router-dom';
+import { Activity, GitBranch } from 'lucide-react';
 import { RepositoryProvider } from '../contexts/RepositoryContext';
-import Button from '../components/ui/Button';
 
 const DashboardLayout: React.FC = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-  
   return (
     <RepositoryProvider>
       <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -35,24 +25,6 @@ const DashboardLayout: React.FC = () => {
                     Repositories
                   </Link>
                 </nav>
-              </div>
-              
-              <div className="flex items-center">
-                {user && (
-                  <div className="flex items-center">
-                    <span className="text-sm text-gray-500 mr-4">
-                      {user.email}
-                    </span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={handleLogout}
-                      icon={<LogOut className="h-4 w-4" />}
-                    >
-                      Sign out
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
           </div>
