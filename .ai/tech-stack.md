@@ -7,7 +7,6 @@
 - **Chart.js** – używana do generowania interaktywnych diagramów osi czasu PR z obsługą tooltipów.
 
 ## Backend
-- **Supabase** – wykorzystywane wyłącznie do autentykacji użytkownika (szybkie logowanie i zarządzanie sesjami); w przyszłości planowane przejście na rozwiązanie oparte o hosting na GitHub Pages.
 - **Node + TypeScript + Express** – oddzielny serwis odpowiadający za logikę biznesową, komunikację z GitHub API oraz przetwarzanie i cachowanie danych.
 
 ## Github API
