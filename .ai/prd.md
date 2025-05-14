@@ -21,15 +21,13 @@ Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzi
 7. Interfejs użytkownika:
    - Wyświetlanie progress baru podczas pobierania danych.
    - Obsługa błędów z wyświetleniem czytelnych komunikatów.
-8. Podstawowy system uwierzytelniania i kont użytkowników:
-   - Rejestracja i logowanie.
 
 ## 4. Granice produktu
 1. MVP nie obejmuje zaawansowanych metryk analitycznych.
 2. Lista repozytoriów jest statyczna i nie można jej dodawać lub modyfikować przez użytkownika.
 3. Interakcje ograniczają się do wyboru dewelopera, przeglądania osi czasu oraz wyświetlania szczegółów PR przy najechaniu kursorem.
 4. Brak możliwości modyfikacji danych - aplikacja pełni funkcję tylko do przeglądu.
-5. Uwierzytelnianie obejmuje jedynie podstawowy system logowania, bez zaawansowanej kontroli dostępu.
+5. Projekt nie wymaga implementacji mechanizmu uwiezytalniania uzytkowników. Strona bedzie hostowana na Github Pages gdzie jest kontrolwa dostepu na poziomie ustawienia repozytorium. 
 
 ## 5. Historyjki użytkowników
 
