@@ -10,7 +10,7 @@
 - **Node + TypeScript + Express** – oddzielny serwis odpowiadający za logikę biznesową, komunikację z GitHub API oraz przetwarzanie i cachowanie danych.
 
 ## Github API
-- Pobieranie danych z GitHub.
+- Pobieranie danych z GitHub (@octokit/rest)
 - Autentykacja przez token (weryfikacja tokenów w razie potrzeby).
 
 ## CI/CD i Hosting
