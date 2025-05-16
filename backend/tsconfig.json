@@ -12,7 +12,8 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@10xdevs/shared": ["../shared/dist"]
     }
   },
   "include": ["src/**/*"],
@@ -20,5 +21,8 @@
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node"
-  }
+  },
+  "references": [
+    { "path": "../shared" }
+  ]
 } 

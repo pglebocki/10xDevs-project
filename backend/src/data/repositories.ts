@@ -1,14 +1,4 @@
-export interface Repository {
-  id: string;
-  name: string;
-  url: string;
-  description: string;
-  stars: number;
-  forks: number;
-  language: string;
-}
-
-export const mockRepositories = [
+export const supportedRepositories = [
     {
         id: "1",
         url: "https://github.com/facebook/react",

@@ -1,5 +1,6 @@
 import { GitHubApiService } from './github-api.js';
-import { mockRepositories, Repository } from '../data/repositories.js';
+import { supportedRepositories } from '../data/repositories.js';
+import { Repository } from '@10xdevs/shared';
 
 export class MainApiService {
   private githubApiService: GitHubApiService;
@@ -11,7 +12,7 @@ export class MainApiService {
   async getRepositories(): Promise<Repository[]> {
     try {
       // Extract URLs from mockRepositories
-      const repoUrls = mockRepositories.map(repo => repo.url);
+      const repoUrls = supportedRepositories.map(repo => repo.url);
       
       // Fetch detailed repository information from GitHub API
       const repositories = await this.githubApiService.getAllRepositories(repoUrls);

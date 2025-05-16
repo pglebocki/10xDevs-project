@@ -1,21 +1,4 @@
-export interface Repository {
-  id: string;
-  name: string;
-  url: string;
-  description: string;
-  stars: number;
-  forks: number;
-  language: string;
-}
-
-export interface Developer {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl: string;
-  repositories: string[];
-  role: string;
-}
+import { Repository, Developer } from '@10xdevs/shared';
 
 export interface PullRequest {
   id: string;

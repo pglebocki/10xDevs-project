@@ -31,4 +31,25 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
   timestamp: string;
+}
+
+// Repository Model (shared between frontend and backend)
+export interface Repository {
+  id: string;
+  name: string;
+  url: string;
+  description: string;
+  stars: number;
+  forks: number;
+  language: string;
+}
+
+// Developer Model (shared between frontend and backend)
+export interface Developer {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
+  repositories: string[];
+  role: string;
 } 

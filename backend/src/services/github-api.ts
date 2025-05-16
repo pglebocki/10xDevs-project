@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { Repository } from '../data/repositories.js';
+import { Repository } from '@10xdevs/shared';
 import NodeCache from 'node-cache';
 
 export class GitHubApiService {
