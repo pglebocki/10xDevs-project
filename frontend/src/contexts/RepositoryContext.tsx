@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
-import { Repository, Developer, mockRepositories, mockDevelopers } from '../data/mockData';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Repository, Developer } from '@10xdevs/shared';
+import { fetchRepositories, fetchDevelopers } from '../network/api';
 
 interface RepositoryContextType {
   repositories: Repository[];
@@ -10,6 +11,8 @@ interface RepositoryContextType {
   selectMetricType: (type: string) => void;
   filteredDevelopers: Developer[];
   filterDevelopers: (searchTerm: string) => void;
+  loading: boolean;
+  error: string | null;
 }
 
 const RepositoryContext = createContext<RepositoryContextType | undefined>(undefined);
@@ -23,23 +26,48 @@ export const useRepository = () => {
 };
 
 export const RepositoryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [repositories] = useState<Repository[]>(mockRepositories);
+  const [repositories, setRepositories] = useState<Repository[]>([]);
   const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
   const [selectedMetricType, setSelectedMetricType] = useState<string>('pr-timeline');
   const [developers, setDevelopers] = useState<Developer[]>([]);
   const [filteredDevelopers, setFilteredDevelopers] = useState<Developer[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const selectRepository = (repoId: string) => {
+  // Fetch repositories on component mount
+  useEffect(() => {
+    const loadRepositories = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchRepositories();
+        setRepositories(data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load repositories. Please try again later.');
+        setLoading(false);
+        console.error('Error fetching repositories:', err);
+      }
+    };
+
+    loadRepositories();
+  }, []);
+
+  const selectRepository = async (repoId: string) => {
     const repo = repositories.find(r => r.id === repoId) || null;
     setSelectedRepository(repo);
     
     if (repo) {
-      // In a real app, this would fetch developers from an API
-      const repoDevelopers = mockDevelopers.filter(dev => 
-        dev.repositories.includes(repoId)
-      );
-      setDevelopers(repoDevelopers);
-      setFilteredDevelopers(repoDevelopers);
+      try {
+        setLoading(true);
+        const repoDevelopers = await fetchDevelopers(repoId);
+        setDevelopers(repoDevelopers);
+        setFilteredDevelopers(repoDevelopers);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load developers. Please try again later.');
+        setLoading(false);
+        console.error('Error fetching developers:', err);
+      }
     } else {
       setDevelopers([]);
       setFilteredDevelopers([]);
@@ -72,7 +100,9 @@ export const RepositoryProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       selectRepository,
       selectMetricType,
       filteredDevelopers,
-      filterDevelopers
+      filterDevelopers,
+      loading,
+      error
     }}>
       {children}
     </RepositoryContext.Provider>
