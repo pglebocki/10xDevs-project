@@ -1,5 +1,5 @@
-import { GitHubApiService } from './github-api';
-import { mockRepositories, Repository } from '../data/repositories';
+import { GitHubApiService } from './github-api.js';
+import { mockRepositories, Repository } from '../data/repositories.js';
 
 export class MainApiService {
   private githubApiService: GitHubApiService;

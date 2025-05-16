@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { RepositoriesController } from '../controllers/repositories-controller';
+import { RepositoriesController } from '../controllers/repositories-controller.js';
 
 const router = Router();
 const repositoriesController = new RepositoriesController();

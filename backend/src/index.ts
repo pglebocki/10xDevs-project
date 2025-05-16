@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import repositoriesRoutes from './routes/repositories-routes';
+import repositoriesRoutes from './routes/repositories-routes.js';
 
 // Load environment variables
 dotenv.config();

@@ -1,13 +1,15 @@
-import { Repository } from '../data/repositories';
+import { Octokit } from '@octokit/rest';
+import { Repository } from '../data/repositories.js';
 import NodeCache from 'node-cache';
-import axios from 'axios';
 
 export class GitHubApiService {
-  private token: string | undefined;
+  private octokit: Octokit;
   private cache: NodeCache;
   
   constructor(token?: string) {
-    this.token = token || process.env.GITHUB_TOKEN;
+    this.octokit = new Octokit({
+      auth: token || process.env.GITHUB_TOKEN
+    });
     this.cache = new NodeCache({ stdTTL: 300 }); // 5-minute cache
   }
 
@@ -31,34 +33,27 @@ export class GitHubApiService {
     try {
       const { owner, repo } = this.parseRepoUrl(repoUrl);
       
-      // Use axios instead of Octokit
-      const repoResponse = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, {
-        headers: this.token ? {
-          Authorization: `token ${this.token}`
-        } : {}
+      const repoData = await this.octokit.repos.get({
+        owner,
+        repo
       });
-      
-      const repoData = repoResponse.data;
-      
-      // Get languages
-      const languagesResponse = await axios.get(`https://api.github.com/repos/${owner}/${repo}/languages`, {
-        headers: this.token ? {
-          Authorization: `token ${this.token}`
-        } : {}
+
+      const languages = await this.octokit.repos.listLanguages({
+        owner,
+        repo
       });
-      
-      const languagesData = languagesResponse.data;
-      const primaryLanguage = Object.keys(languagesData).length > 0 
-        ? Object.keys(languagesData)[0] 
+
+      const primaryLanguage = Object.keys(languages.data).length > 0 
+        ? Object.keys(languages.data)[0] 
         : '';
 
       const repository: Repository = {
-        id: repoData.id.toString(),
-        name: repoData.name,
-        url: repoData.html_url,
-        description: repoData.description || '',
-        stars: repoData.stargazers_count,
-        forks: repoData.forks_count,
+        id: repoData.data.id.toString(),
+        name: repoData.data.name,
+        url: repoData.data.html_url,
+        description: repoData.data.description || '',
+        stars: repoData.data.stargazers_count,
+        forks: repoData.data.forks_count,
         language: primaryLanguage
       };
 

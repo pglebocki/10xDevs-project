@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { MainApiService } from '../services/main-api';
+import { MainApiService } from '../services/main-api.js';
 
 export class RepositoriesController {
   private mainApiService: MainApiService;
