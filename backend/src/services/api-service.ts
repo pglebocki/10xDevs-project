@@ -1,5 +1,5 @@
 import { GitHubApiClient } from '../client/github-api.js';
-import { supportedRepositories } from '../data/repositories.js';
+import { supportedRepositories } from '../config/repositories.js';
 import { Repository } from '@10xdevs/shared';
 
 export class ApiService {
