@@ -4,5 +4,6 @@ import { RepositoriesController } from '../controllers/repositories-controller.j
 const router = Router();
 const repositoriesController = new RepositoriesController();
 router.get('/', repositoriesController.getRepositories);
+router.get('/:id/developers', repositoriesController.getDevelopers);
 
 export default router; 

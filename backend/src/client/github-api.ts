@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { Repository } from '@10xdevs/shared';
+import { Repository, Developer } from '@10xdevs/shared';
 import NodeCache from 'node-cache';
 
 export class GitHubApiClient {
@@ -62,6 +62,68 @@ export class GitHubApiClient {
     } catch (error) {
       console.error(`Failed to fetch repository details for ${repoUrl}:`, error);
       return null;
+    }
+  }
+
+  async getRepositoryDevelopers(repoUrl: string): Promise<Developer[]> {
+    const cacheKey = `developers_${repoUrl}`;
+    const cachedData = this.cache.get<Developer[]>(cacheKey);
+    
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      const { owner, repo } = this.parseRepoUrl(repoUrl);
+      
+      // Fetch contributors from GitHub API
+      const contributors = await this.octokit.repos.listContributors({
+        owner,
+        repo,
+        per_page: 100 // Adjust as needed
+      });
+
+      // Transform contributors to Developer objects
+      const developers: Developer[] = [];
+      
+      for (const contributor of contributors.data) {
+        if (!contributor || !contributor.id || !contributor.login || !contributor.avatar_url) {
+          continue; // Skip invalid contributors
+        }
+        
+        try {
+          // For each contributor, fetch user details
+          const userDetails = await this.octokit.users.getByUsername({
+            username: contributor.login
+          });
+
+          developers.push({
+            id: contributor.id.toString(),
+            name: userDetails.data.name || contributor.login,
+            email: userDetails.data.email || '',
+            avatarUrl: contributor.avatar_url,
+            repositories: [repoUrl],
+            role: 'Contributor' // Default role
+          });
+        } catch (error) {
+          console.error(`Failed to fetch details for user ${contributor.login}:`, error);
+          // Add minimal information if user details fetch fails
+          developers.push({
+            id: contributor.id.toString(),
+            name: contributor.login,
+            email: '',
+            avatarUrl: contributor.avatar_url,
+            repositories: [repoUrl],
+            role: 'Contributor'
+          });
+        }
+      }
+
+      this.cache.set(cacheKey, developers);
+      return developers;
+    } catch (error) {
+      console.error(`Failed to fetch developers for ${repoUrl}:`, error);
+      return [];
     }
   }
 
