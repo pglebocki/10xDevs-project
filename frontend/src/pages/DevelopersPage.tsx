@@ -1,26 +1,78 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useRepository } from '../contexts/RepositoryContext';
 import DeveloperCard from '../components/dashboard/DeveloperCard';
 import DeveloperFilter from '../components/dashboard/DeveloperFilter';
 import Button from '../components/ui/Button';
+import { Developer } from '@10xdevs/shared';
+
+// Extended developer interface with additional API fields
+interface ExtendedDeveloper extends Developer {
+  login?: string;
+  contributions?: number;
+}
 
 const DevelopersPage: React.FC = () => {
   const { repoId } = useParams<{ repoId: string }>();
-  const { 
-    repositories, 
-    selectRepository, 
-    selectedRepository,
-    filteredDevelopers,
-    filterDevelopers
-  } = useRepository();
+  const { repositories, selectRepository, selectedRepository } = useRepository();
   
-  React.useEffect(() => {
+  const [developers, setDevelopers] = useState<ExtendedDeveloper[]>([]);
+  const [filteredDevelopers, setFilteredDevelopers] = useState<ExtendedDeveloper[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const fetchDevelopers = useCallback(async () => {
+    if (!repoId) return;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`/api/repositories/${repoId}/developers`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch developers: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error?.message || 'Failed to fetch developers');
+      }
+      
+      setDevelopers(data.data);
+      setFilteredDevelopers(data.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [repoId]);
+  
+  useEffect(() => {
     if (repoId) {
       selectRepository(repoId);
+      fetchDevelopers();
     }
-  }, [repoId, selectRepository]);
+  }, [repoId, selectRepository, fetchDevelopers]);
+  
+  const filterDevelopers = useCallback((searchTerm: string) => {
+    if (!searchTerm.trim()) {
+      setFilteredDevelopers(developers);
+      return;
+    }
+    
+    const lowerCaseSearch = searchTerm.toLowerCase();
+    const filtered = developers.filter(
+      dev => 
+        dev.name.toLowerCase().includes(lowerCaseSearch) || 
+        (dev.login && dev.login.toLowerCase().includes(lowerCaseSearch)) ||
+        (dev.role && dev.role.toLowerCase().includes(lowerCaseSearch))
+    );
+    
+    setFilteredDevelopers(filtered);
+  }, [developers]);
   
   if (!selectedRepository) {
     return (
@@ -51,11 +103,25 @@ const DevelopersPage: React.FC = () => {
         <DeveloperFilter onFilter={filterDevelopers} />
         
         <Link to={`/repositories/${repoId}/metrics/pr-timeline`}>
-          <Button variant="primary">View Metrics</Button>
+          <Button variant="primary">View Repository Metrics</Button>
         </Link>
       </div>
       
-      {filteredDevelopers.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+          <p className="text-gray-500">Loading developers...</p>
+        </div>
+      ) : error ? (
+        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+          <p className="text-red-500">{error}</p>
+          <button 
+            onClick={fetchDevelopers}
+            className="mt-2 text-blue-600 hover:text-blue-800"
+          >
+            Try again
+          </button>
+        </div>
+      ) : filteredDevelopers.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
           <p className="text-gray-500">No developers found for this repository.</p>
         </div>

@@ -18,7 +18,7 @@ const DeveloperFilter: React.FC<DeveloperFilterProps> = ({ onFilter }) => {
   return (
     <div className="w-full max-w-md">
       <Input
-        placeholder="Search developers by name or email..."
+        placeholder="Search developers by name, GitHub username or role..."
         value={searchTerm}
         onChange={handleSearch}
         icon={<Search className="h-4 w-4 text-gray-400" />}
