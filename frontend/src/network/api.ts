@@ -19,7 +19,11 @@ async function fetchFromApi<T>(endpoint: string): Promise<T> {
       throw new Error(result.error || 'Unknown API error');
     }
     
-    return result.data as T;
+    if (!result.data) {
+      throw new Error('No data received from API');
+    }
+    
+    return result.data;
   } catch (error) {
     console.error('API request failed:', error);
     throw error;
