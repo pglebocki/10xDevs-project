@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { MainApiService } from '../services/main-api.js';
+import { ApiService } from '../services/api-service.js';
 import { ApiResponse } from '@10xdevs/shared';
 
 export class RepositoriesController {
-  private mainApiService: MainApiService;
+  private mainApiService: ApiService;
   
   constructor() {
-    this.mainApiService = new MainApiService();
+    this.mainApiService = new ApiService();
   }
   
   getRepositories = async (req: Request, res: Response): Promise<void> => {

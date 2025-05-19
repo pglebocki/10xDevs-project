@@ -2,7 +2,7 @@ import { Octokit } from '@octokit/rest';
 import { Repository } from '@10xdevs/shared';
 import NodeCache from 'node-cache';
 
-export class GitHubApiService {
+export class GitHubApiClient {
   private octokit: Octokit;
   private cache: NodeCache;
   

@@ -2,7 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import repositoriesRoutes from './routes/repositories-routes.js';
-import { ApiResponse } from '@10xdevs/shared';
+import healthRoutes from './routes/health-routes.js';
+import { HealthController } from './controllers/health-controller.js';
+import { RepositoriesController } from './controllers/repositories-controller.js';
 
 // Load environment variables
 dotenv.config();
@@ -17,16 +19,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/repositories', repositoriesRoutes);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  const response: ApiResponse<{ status: string }> = {
-    success: true,
-    data: { status: 'ok' },
-    timestamp: new Date().toISOString()
-  };
-  res.status(200).json(response);
-});
+app.use('/health', healthRoutes);
 
 // Start the server
 app.listen(port, () => {

@@ -1,12 +1,12 @@
-import { GitHubApiService } from './github-api.js';
+import { GitHubApiClient } from '../client/github-api.js';
 import { supportedRepositories } from '../data/repositories.js';
 import { Repository } from '@10xdevs/shared';
 
-export class MainApiService {
-  private githubApiService: GitHubApiService;
+export class ApiService {
+  private githubApiService: GitHubApiClient;
   
   constructor(githubToken?: string) {
-    this.githubApiService = new GitHubApiService(githubToken);
+    this.githubApiService = new GitHubApiClient(githubToken);
   }
 
   async getRepositories(): Promise<Repository[]> {
