@@ -2,13 +2,14 @@ import { Octokit } from '@octokit/rest';
 import { Repository, Developer } from '@10xdevs/shared';
 import NodeCache from 'node-cache';
 import { RepositoryData } from '../types/models.js';
-
+import dotenv from 'dotenv';
 
 export class GitHubApiClient {
   private octokit: Octokit;
   private cache: NodeCache;
   
   constructor(token?: string) {
+    dotenv.config();
     this.octokit = new Octokit({
       auth: token || process.env.GITHUB_TOKEN
     });
