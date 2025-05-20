@@ -10,9 +10,13 @@ export class ApiService {
   }
 
   async getRepositories(): Promise<Repository[]> {
-    try {      
+    try {
+      // Extract URLs from mockRepositories
+      const repoUrls = supportedRepositories.map(repo => repo.url);
+      
       // Fetch detailed repository information from GitHub API
-      const repositories = await this.githubApiService.getAllRepositories(supportedRepositories);        
+      const repositories = await this.githubApiService.getAllRepositories(repoUrls);
+      
       return repositories;
     } catch (error) {
       console.error('Error fetching repositories:', error);
@@ -23,7 +27,7 @@ export class ApiService {
   async getDevelopers(repositoryId: string): Promise<Developer[]> {
     try {
       // Find the repository by ID
-      const repository = supportedRepositories.find(repo => repo.id.toString() === repositoryId);
+      const repository = supportedRepositories.find(repo => repo.id === repositoryId);
       
       if (!repository) {
         throw new Error(`Repository with ID ${repositoryId} not found`);

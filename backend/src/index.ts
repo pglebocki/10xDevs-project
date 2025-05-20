@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import repositoriesRoutes from './routes/repositories-routes.js';
 import healthRoutes from './routes/health-routes.js';
+import { HealthController } from './controllers/health-controller.js';
+import { RepositoriesController } from './controllers/repositories-controller.js';
 
 // Load environment variables
 dotenv.config();
