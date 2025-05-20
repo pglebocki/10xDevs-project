@@ -12,7 +12,7 @@ function App() {
         <Route index element={<Navigate to="/repositories" replace />} />
         <Route path="repositories" element={<RepositoriesPage />} />
         <Route path="repositories/:repoId/developers" element={<DevelopersPage />} />
-        <Route path="repositories/:repoId/metrics/:metricType" element={<TimelinePage />} />
+        <Route path="repositories/:repoId/developers/:developerId/metrics/:metricType" element={<TimelinePage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
