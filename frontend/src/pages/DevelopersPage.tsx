@@ -6,6 +6,8 @@ import DeveloperCard from '../components/dashboard/DeveloperCard';
 import DeveloperFilter from '../components/dashboard/DeveloperFilter';
 import Button from '../components/ui/Button';
 import { Developer } from '@10xdevs/shared';
+import { fetchDevelopers } from '../network/api';
+
 
 // Extended developer interface with additional API fields
 interface ExtendedDeveloper extends Developer {
@@ -22,27 +24,16 @@ const DevelopersPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const fetchDevelopers = useCallback(async () => {
+  const fetchDevs = useCallback(async () => {
     if (!repoId) return;
     
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await fetch(`/api/repositories/${repoId}/developers`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch developers: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (!data.success) {
-        throw new Error(data.error?.message || 'Failed to fetch developers');
-      }
-      
-      setDevelopers(data.data);
-      setFilteredDevelopers(data.data);
+      const developers = await fetchDevelopers(repoId);
+      setDevelopers(developers);
+      setFilteredDevelopers(developers);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
@@ -53,9 +44,9 @@ const DevelopersPage: React.FC = () => {
   useEffect(() => {
     if (repoId) {
       selectRepository(repoId);
-      fetchDevelopers();
+      fetchDevs();
     }
-  }, [repoId, selectRepository, fetchDevelopers]);
+  }, [repoId, selectRepository, fetchDevs]);
   
   const filterDevelopers = useCallback((searchTerm: string) => {
     if (!searchTerm.trim()) {
@@ -115,7 +106,7 @@ const DevelopersPage: React.FC = () => {
         <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
           <p className="text-red-500">{error}</p>
           <button 
-            onClick={fetchDevelopers}
+            onClick={fetchDevs}
             className="mt-2 text-blue-600 hover:text-blue-800"
           >
             Try again

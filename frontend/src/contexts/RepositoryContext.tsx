@@ -55,23 +55,6 @@ export const RepositoryProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const selectRepository = async (repoId: string) => {
     const repo = repositories.find(r => r.id === repoId) || null;
     setSelectedRepository(repo);
-    
-    if (repo) {
-      try {
-        setLoading(true);
-        const repoDevelopers = await fetchDevelopers(repoId);
-        setDevelopers(repoDevelopers);
-        setFilteredDevelopers(repoDevelopers);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load developers. Please try again later.');
-        setLoading(false);
-        console.error('Error fetching developers:', err);
-      }
-    } else {
-      setDevelopers([]);
-      setFilteredDevelopers([]);
-    }
   };
 
   const selectMetricType = (type: string) => {
