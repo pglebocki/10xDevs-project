@@ -10,14 +10,9 @@ export class ApiService {
   }
 
   async getRepositories(): Promise<Repository[]> {
-    try {
-      // Extract URLs from mockRepositories
-      const repoUrls = supportedRepositories.map(repo => repo.url);
-      
+    try {      
       // Fetch detailed repository information from GitHub API
-      const repositories = await this.githubApiService.getAllRepositories(repoUrls);
-      
-      return repositories;
+      return await this.githubApiService.getAllRepositories(supportedRepositories);
     } catch (error) {
       console.error('Error fetching repositories:', error);
       throw error;

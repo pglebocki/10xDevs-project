@@ -36,6 +36,7 @@ export interface ApiResponse<T> {
 // Repository Model (shared between frontend and backend)
 export interface Repository {
   id: string;
+  githubId: string;
   name: string;
   url: string;
   description: string;
