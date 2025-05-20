@@ -1,6 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import { Repository, Developer } from '@10xdevs/shared';
 import NodeCache from 'node-cache';
+import { RepositoryData } from '../types/repository_data.js';
 
 export class GitHubApiClient {
   private octokit: Octokit;
@@ -48,7 +49,8 @@ export class GitHubApiClient {
         : '';
 
       const repository: Repository = {
-        id: repoData.data.id.toString(),
+        id: "",
+        githubId: repoData.data.id.toString(),
         name: repoData.data.name,
         url: repoData.data.html_url,
         description: repoData.data.description || '',
@@ -127,12 +129,13 @@ export class GitHubApiClient {
     }
   }
 
-  async getAllRepositories(repoUrls: string[]): Promise<Repository[]> {
+  async getAllRepositories(repositoriesData: RepositoryData[]): Promise<Repository[]> {
     const repositories: Repository[] = [];
     
-    for (const url of repoUrls) {
-      const repoDetails = await this.getRepositoryDetails(url);
+    for (const repoData of repositoriesData) {
+      const repoDetails = await this.getRepositoryDetails(repoData.url);
       if (repoDetails) {
+        repoDetails.id = repoData.id;
         repositories.push(repoDetails);
       }
     }

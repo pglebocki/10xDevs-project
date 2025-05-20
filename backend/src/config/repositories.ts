@@ -1,4 +1,6 @@
-export const supportedRepositories = [
+import { RepositoryData } from "../types/repository_data.js";
+
+export const supportedRepositories: RepositoryData[] = [
     {
         id: "1",
         url: "https://github.com/facebook/react",
