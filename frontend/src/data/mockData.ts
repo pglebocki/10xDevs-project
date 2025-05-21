@@ -19,6 +19,7 @@ export interface PullRequest {
 export const mockRepositories: Repository[] = [
   {
     id: "repo1",
+    githubId: "1234567890",
     name: "frontend-app",
     url: "https://github.com/company/frontend-app",
     description: "Main frontend application built with React and TypeScript",
@@ -28,6 +29,7 @@ export const mockRepositories: Repository[] = [
   },
   {
     id: "repo2",
+    githubId: "1234567891",
     name: "api-service",
     url: "https://github.com/company/api-service",
     description: "Backend API service built with Node.js and Express",
@@ -37,6 +39,7 @@ export const mockRepositories: Repository[] = [
   },
   {
     id: "repo3",
+    githubId: "1234567892",
     name: "design-system",
     url: "https://github.com/company/design-system",
     description: "Component library and design system used across projects",
@@ -46,6 +49,7 @@ export const mockRepositories: Repository[] = [
   },
   {
     id: "repo4",
+    githubId: "1234567893",
     name: "mobile-app",
     url: "https://github.com/company/mobile-app",
     description: "Cross-platform mobile application built with React Native",
@@ -55,6 +59,7 @@ export const mockRepositories: Repository[] = [
   },
   {
     id: "repo5",
+    githubId: "1234567894",
     name: "data-processing",
     url: "https://github.com/company/data-processing",
     description: "Data processing and analytics services",
@@ -70,7 +75,7 @@ export const mockDevelopers: Developer[] = [
     name: "Alex Johnson",
     email: "alex.johnson@example.com",
     avatarUrl: "https://randomuser.me/api/portraits/men/1.jpg",
-    repositories: ["repo1", "repo3"],
+    repositories: ["1", "repo3"],
     role: "Frontend Developer"
   },
   {
@@ -78,7 +83,7 @@ export const mockDevelopers: Developer[] = [
     name: "Sarah Chen",
     email: "sarah.chen@example.com",
     avatarUrl: "https://randomuser.me/api/portraits/women/2.jpg",
-    repositories: ["repo1", "repo2", "repo4"],
+    repositories: ["1", "repo2", "repo4"],
     role: "Full Stack Developer"
   },
   {
@@ -86,7 +91,7 @@ export const mockDevelopers: Developer[] = [
     name: "Miguel Rodriguez",
     email: "miguel.rodriguez@example.com",
     avatarUrl: "https://randomuser.me/api/portraits/men/3.jpg",
-    repositories: ["repo2", "repo5"],
+    repositories: ["1", "repo5"],
     role: "Backend Developer"
   },
   {
@@ -94,7 +99,7 @@ export const mockDevelopers: Developer[] = [
     name: "Emily Wilson",
     email: "emily.wilson@example.com",
     avatarUrl: "https://randomuser.me/api/portraits/women/4.jpg",
-    repositories: ["repo1", "repo3", "repo4"],
+    repositories: ["1", "repo3", "repo4"],
     role: "UI/UX Designer"
   },
   {
@@ -102,7 +107,7 @@ export const mockDevelopers: Developer[] = [
     name: "James Lee",
     email: "james.lee@example.com",
     avatarUrl: "https://randomuser.me/api/portraits/men/5.jpg",
-    repositories: ["repo2", "repo5"],
+    repositories: ["1", "repo5"],
     role: "Data Engineer"
   },
   {
@@ -110,7 +115,7 @@ export const mockDevelopers: Developer[] = [
     name: "Olivia Parker",
     email: "olivia.parker@example.com",
     avatarUrl: "https://randomuser.me/api/portraits/women/6.jpg",
-    repositories: ["repo1", "repo3"],
+    repositories: ["1", "repo3"],
     role: "Frontend Developer"
   },
   {
@@ -118,7 +123,7 @@ export const mockDevelopers: Developer[] = [
     name: "Daniel Smith",
     email: "daniel.smith@example.com",
     avatarUrl: "https://randomuser.me/api/portraits/men/7.jpg",
-    repositories: ["repo2", "repo4"],
+    repositories: ["1", "repo4"],
     role: "DevOps Engineer"
   }
 ];
@@ -126,7 +131,7 @@ export const mockDevelopers: Developer[] = [
 // Generate more realistic PR data
 const generatePRs = (repoId: string, count: number = 20): PullRequest[] => {
   const prs: PullRequest[] = [];
-  const developers = mockDevelopers.filter(dev => dev.repositories.includes(repoId));
+  const developers = mockDevelopers
   
   // Generate PRs over the last 30 days
   const endDate = new Date();

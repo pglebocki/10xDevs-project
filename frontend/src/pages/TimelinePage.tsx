@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, GitPullRequest, MessageSquare, GitCommit } from 'lucide-react';
 import { useRepository } from '../contexts/RepositoryContext';
 import PRTimelineChart from '../components/dashboard/PRTimelineChart';
 import MetricTypeSwitcher from '../components/dashboard/MetricTypeSwitcher';
-import { generateTimelineData, mockDevelopers } from '../data/mockData';
+import { generateTimelineData } from '../data/mockData';
 import Card, { CardContent } from '../components/ui/Card';
-import Badge from '../components/ui/Badge';
+import { fetchDeveloperById } from '../network/api';
+import { Developer } from '@10xdevs/shared';
 
 const EmptyMetricView: React.FC<{ metricName: string }> = ({ metricName }) => {
   return (
@@ -20,14 +21,17 @@ const EmptyMetricView: React.FC<{ metricName: string }> = ({ metricName }) => {
 };
 
 const TimelinePage: React.FC = () => {
-  const { repoId, metricType } = useParams<{ repoId: string; metricType: string }>();
+  const { repoId, developerId, metricType } = useParams<{ repoId: string; developerId: string; metricType: string }>();
   const { 
     selectRepository, 
     selectedRepository,
     selectMetricType,
     selectedMetricType,
-    developers
   } = useRepository();
+  
+  const [developer, setDeveloper] = useState<Developer | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
     if (repoId) {
@@ -39,6 +43,26 @@ const TimelinePage: React.FC = () => {
     }
   }, [repoId, metricType, selectRepository, selectMetricType]);
   
+  useEffect(() => {
+    const loadDeveloper = async () => {
+      if (!repoId || !developerId) return;
+      
+      try {
+        setLoading(true);
+        setError(null);
+        const developerData = await fetchDeveloperById(repoId, developerId);
+        setDeveloper(developerData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load developer data');
+        console.error('Error fetching developer:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadDeveloper();
+  }, [repoId, developerId]);
+  
   if (!selectedRepository) {
     return (
       <div className="text-center py-12">
@@ -49,9 +73,27 @@ const TimelinePage: React.FC = () => {
       </div>
     );
   }
+  
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">Loading developer data...</p>
+      </div>
+    );
+  }
+  
+  if (error || !developer) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">{error || 'Developer not found'}</p>
+        <Link to={`/repositories/${repoId}/developers`} className="text-blue-500 hover:underline mt-2 inline-block">
+          Back to developers list
+        </Link>
+      </div>
+    );
+  }
 
   const metricData = generateTimelineData(repoId);
-  const developer = developers[0]; // Get the first developer for demo
   
   return (
     <div>
@@ -65,53 +107,51 @@ const TimelinePage: React.FC = () => {
         </Link>
       </div>
       
-      {developer && (
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <img 
-              src={developer.avatarUrl} 
-              alt={developer.name}
-              className="w-16 h-16 rounded-full object-cover"
-            />
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{developer.name}</h1>
-              <p className="text-gray-500">{developer.email}</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card>
-              <CardContent className="flex items-center justify-between p-4">
-                <div className="flex items-center">
-                  <GitPullRequest className="h-5 w-5 text-blue-500 mr-2" />
-                  <span className="text-gray-600">Pull Requests</span>
-                </div>
-                <span className="text-2xl font-semibold">24</span>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="flex items-center justify-between p-4">
-                <div className="flex items-center">
-                  <MessageSquare className="h-5 w-5 text-green-500 mr-2" />
-                  <span className="text-gray-600">Comments</span>
-                </div>
-                <span className="text-2xl font-semibold">156</span>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="flex items-center justify-between p-4">
-                <div className="flex items-center">
-                  <GitCommit className="h-5 w-5 text-purple-500 mr-2" />
-                  <span className="text-gray-600">Commits</span>
-                </div>
-                <span className="text-2xl font-semibold">342</span>
-              </CardContent>
-            </Card>
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <img 
+            src={developer.avatarUrl} 
+            alt={developer.name}
+            className="w-16 h-16 rounded-full object-cover"
+          />
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{developer.name}</h1>
+            <p className="text-gray-500">{developer.email}</p>
           </div>
         </div>
-      )}
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardContent className="flex items-center justify-between p-4">
+              <div className="flex items-center">
+                <GitPullRequest className="h-5 w-5 text-blue-500 mr-2" />
+                <span className="text-gray-600">Pull Requests</span>
+              </div>
+              <span className="text-2xl font-semibold">24</span>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="flex items-center justify-between p-4">
+              <div className="flex items-center">
+                <MessageSquare className="h-5 w-5 text-green-500 mr-2" />
+                <span className="text-gray-600">Comments</span>
+              </div>
+              <span className="text-2xl font-semibold">156</span>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="flex items-center justify-between p-4">
+              <div className="flex items-center">
+                <GitCommit className="h-5 w-5 text-purple-500 mr-2" />
+                <span className="text-gray-600">Commits</span>
+              </div>
+              <span className="text-2xl font-semibold">342</span>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
       
       <div className="mb-6">
         <MetricTypeSwitcher 
