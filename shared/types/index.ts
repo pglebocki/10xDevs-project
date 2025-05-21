@@ -25,6 +25,26 @@ export interface PullRequest {
   user: GitHubUser;
 }
 
+// Pull Request Data for Timeline
+export interface PullRequestData {
+  id: number;
+  number: number;
+  title: string;
+  state: 'open' | 'closed';
+  merged: boolean;
+  createdAt: string;
+  updatedAt: string;
+  closedAt: string | null;
+  mergedAt: string | null;
+  authorId: string;
+  authorLogin: string;
+  authorAvatarUrl: string;
+  commentsTimeline: { date: string; authorId: string; authorLogin: string }[];
+  approvalsTimeline: { date: string; authorId: string; authorLogin: string }[];
+  commitsTimeline: { date: string; message: string; authorId: string; authorLogin: string }[];
+  url: string;
+}
+
 // API Response Types
 export interface ApiResponse<T> {
   success: boolean;

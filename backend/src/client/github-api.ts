@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { Repository, Developer } from '@10xdevs/shared';
+import { Repository, Developer, PullRequestData } from '@10xdevs/shared';
 import NodeCache from 'node-cache';
 import { RepositoryData } from '../types/models.js';
 import dotenv from 'dotenv';
@@ -143,5 +143,107 @@ export class GitHubApiClient {
     }
     
     return repositories;
+  }
+
+  async getDeveloperPullRequests(repoUrl: string, developerId: string): Promise<PullRequestData[]> {
+    const cacheKey = `pr_${repoUrl}_${developerId}`;
+    const cachedData = this.cache.get<PullRequestData[]>(cacheKey);
+    
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      const { owner, repo } = this.parseRepoUrl(repoUrl);
+      
+      // First, find the developer's GitHub login from the ID
+      const developers = await this.getRepositoryDevelopers(repoUrl);
+      const developer = developers.find(dev => dev.id === developerId);
+      
+      if (!developer) {
+        throw new Error(`Developer with ID ${developerId} not found in repository`);
+      }
+      
+      // Fetch pull requests authored by the developer
+      const pullRequestsResponse = await this.octokit.pulls.list({
+        owner,
+        repo,
+        state: 'all',
+        sort: 'created',
+        direction: 'desc',
+        per_page: 100
+      });
+
+      const pullRequests: PullRequestData[] = [];
+      
+      // Process each PR authored by the developer
+      for (const pr of pullRequestsResponse.data) {
+        if (pr.user && pr.user.id.toString() === developerId) {
+          // Get PR reviews (contains approvals)
+          const reviews = await this.octokit.pulls.listReviews({
+            owner,
+            repo,
+            pull_number: pr.number
+          });
+          
+          // Get PR comments
+          const comments = await this.octokit.pulls.listReviewComments({
+            owner,
+            repo,
+            pull_number: pr.number
+          });
+          
+          // Get PR commits
+          const commits = await this.octokit.pulls.listCommits({
+            owner,
+            repo,
+            pull_number: pr.number
+          });
+          
+          // Format the data
+          const pullRequestData: PullRequestData = {
+            id: pr.id,
+            number: pr.number,
+            title: pr.title,
+            state: pr.state as 'open' | 'closed',
+            merged: !!pr.merged_at,
+            createdAt: pr.created_at,
+            updatedAt: pr.updated_at,
+            closedAt: pr.closed_at,
+            mergedAt: pr.merged_at,
+            authorId: pr.user.id.toString(),
+            authorLogin: pr.user.login,
+            authorAvatarUrl: pr.user.avatar_url,
+            url: pr.html_url,
+            commentsTimeline: comments.data.map(comment => ({
+              date: comment.created_at,
+              authorId: comment.user?.id.toString() || '',
+              authorLogin: comment.user?.login || ''
+            })),
+            approvalsTimeline: reviews.data
+              .filter(review => review.state === 'APPROVED')
+              .map(review => ({
+                date: review.submitted_at || '',
+                authorId: review.user?.id.toString() || '',
+                authorLogin: review.user?.login || ''
+              })),
+            commitsTimeline: commits.data.map(commit => ({
+              date: commit.commit.author?.date || '',
+              message: commit.commit.message,
+              authorId: commit.author?.id?.toString() || '',
+              authorLogin: commit.author?.login || ''
+            }))
+          };
+          
+          pullRequests.push(pullRequestData);
+        }
+      }
+      
+      this.cache.set(cacheKey, pullRequests);
+      return pullRequests;
+    } catch (error) {
+      console.error(`Failed to fetch pull requests for developer ${developerId} in ${repoUrl}:`, error);
+      return [];
+    }
   }
 } 
