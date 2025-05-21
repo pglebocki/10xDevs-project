@@ -29,11 +29,11 @@ export class RepositoriesController {
     }
   };
 
-  getDevelopers = async (req: Request, res: Response): Promise<void> => {
+  getDevelopersFromRepository = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { repoId } = req.params;
       
-      if (!id) {
+      if (!repoId) {
         const response: ApiResponse<null> = {
           success: false,
           error: 'Repository ID is required',
@@ -43,7 +43,7 @@ export class RepositoriesController {
         return;
       }
       
-      const developers = await this.mainApiService.getDevelopers(id);
+      const developers = await this.mainApiService.getDevelopers(repoId);
       const response: ApiResponse<typeof developers> = {
         success: true,
         data: developers,
