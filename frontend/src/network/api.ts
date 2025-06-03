@@ -1,4 +1,4 @@
-import { Repository, Developer, ApiResponse } from '@10xdevs/shared';
+import { Repository, Developer, ApiResponse, PullRequestData } from '@10xdevs/shared';
 
 const API_BASE_URL = 'http://localhost:4000/api';
 
@@ -63,4 +63,11 @@ export async function fetchDeveloperById(repositoryId: string, developerId: stri
   }
   
   return developer;
+}
+
+/**
+ * Fetch pull requests for a specific developer in a repository
+ */
+export async function fetchDeveloperPullRequests(repositoryId: string, developerId: string): Promise<PullRequestData[]> {
+  return fetchFromApi<PullRequestData[]>(`/repositories/${repositoryId}/developers/${developerId}/pull-requests`);
 } 

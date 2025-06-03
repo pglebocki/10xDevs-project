@@ -10,10 +10,11 @@ interface MetricType {
 
 interface MetricTypeSwitcherProps {
   repoId: string;
+  developerId?: string;
   selected: string;
 }
 
-const MetricTypeSwitcher: React.FC<MetricTypeSwitcherProps> = ({ repoId, selected }) => {
+const MetricTypeSwitcher: React.FC<MetricTypeSwitcherProps> = ({ repoId, developerId, selected }) => {
   const navigate = useNavigate();
   
   const metricTypes: MetricType[] = [
@@ -40,7 +41,11 @@ const MetricTypeSwitcher: React.FC<MetricTypeSwitcherProps> = ({ repoId, selecte
   ];
   
   const handleSelect = (metricId: string) => {
-    navigate(`/repositories/${repoId}/metrics/${metricId}`);
+    if (developerId) {
+      navigate(`/repositories/${repoId}/developers/${developerId}/metrics/${metricId}`);
+    } else {
+      navigate(`/repositories/${repoId}/metrics/${metricId}`);
+    }
   };
   
   return (

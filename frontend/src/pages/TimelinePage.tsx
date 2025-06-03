@@ -4,17 +4,16 @@ import { ChevronLeft, GitPullRequest, MessageSquare, GitCommit } from 'lucide-re
 import { useRepository } from '../contexts/RepositoryContext';
 import PRTimelineChart from '../components/dashboard/PRTimelineChart';
 import MetricTypeSwitcher from '../components/dashboard/MetricTypeSwitcher';
-import { generateTimelineData } from '../data/mockData';
 import Card, { CardContent } from '../components/ui/Card';
-import { fetchDeveloperById } from '../network/api';
-import { Developer } from '@10xdevs/shared';
+import { fetchDeveloperById, fetchDeveloperPullRequests } from '../network/api';
+import { Developer, PullRequestData } from '@10xdevs/shared';
 
 const EmptyMetricView: React.FC<{ metricName: string }> = ({ metricName }) => {
   return (
     <div className="bg-white p-8 rounded-lg border border-gray-200 text-center">
       <h3 className="text-lg font-medium text-gray-900 mb-2">{metricName}</h3>
       <p className="text-gray-500">
-        This metric view is a placeholder in the PoC. Only PR Timeline is implemented.
+        To be implemented...
       </p>
     </div>
   );
@@ -30,6 +29,7 @@ const TimelinePage: React.FC = () => {
   } = useRepository();
   
   const [developer, setDeveloper] = useState<Developer | null>(null);
+  const [pullRequests, setPullRequests] = useState<PullRequestData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -44,23 +44,30 @@ const TimelinePage: React.FC = () => {
   }, [repoId, metricType, selectRepository, selectMetricType]);
   
   useEffect(() => {
-    const loadDeveloper = async () => {
+    const loadData = async () => {
       if (!repoId || !developerId) return;
       
       try {
         setLoading(true);
         setError(null);
-        const developerData = await fetchDeveloperById(repoId, developerId);
+        
+        // Ładowanie danych dewelopera i PR równolegle
+        const [developerData, pullRequestsData] = await Promise.all([
+          fetchDeveloperById(repoId, developerId),
+          fetchDeveloperPullRequests(repoId, developerId)
+        ]);
+        
         setDeveloper(developerData);
+        setPullRequests(pullRequestsData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load developer data');
-        console.error('Error fetching developer:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
     };
     
-    loadDeveloper();
+    loadData();
   }, [repoId, developerId]);
   
   if (!selectedRepository) {
@@ -93,10 +100,8 @@ const TimelinePage: React.FC = () => {
     );
   }
 
-  const metricData = generateTimelineData(repoId);
-  
   return (
-    <div>
+    <div className="max-w-full overflow-x-hidden">
       <div className="mb-6">
         <Link 
           to={`/repositories/${repoId}/developers`} 
@@ -127,7 +132,7 @@ const TimelinePage: React.FC = () => {
                 <GitPullRequest className="h-5 w-5 text-blue-500 mr-2" />
                 <span className="text-gray-600">Pull Requests</span>
               </div>
-              <span className="text-2xl font-semibold">24</span>
+              <span className="text-2xl font-semibold">{pullRequests.length}</span>
             </CardContent>
           </Card>
           
@@ -137,7 +142,9 @@ const TimelinePage: React.FC = () => {
                 <MessageSquare className="h-5 w-5 text-green-500 mr-2" />
                 <span className="text-gray-600">Comments</span>
               </div>
-              <span className="text-2xl font-semibold">156</span>
+              <span className="text-2xl font-semibold">
+                {pullRequests.reduce((total, pr) => total + pr.commentsTimeline.length, 0)}
+              </span>
             </CardContent>
           </Card>
           
@@ -147,7 +154,9 @@ const TimelinePage: React.FC = () => {
                 <GitCommit className="h-5 w-5 text-purple-500 mr-2" />
                 <span className="text-gray-600">Commits</span>
               </div>
-              <span className="text-2xl font-semibold">342</span>
+              <span className="text-2xl font-semibold">
+                {pullRequests.reduce((total, pr) => total + pr.commitsTimeline.length, 0)}
+              </span>
             </CardContent>
           </Card>
         </div>
@@ -156,19 +165,22 @@ const TimelinePage: React.FC = () => {
       <div className="mb-6">
         <MetricTypeSwitcher 
           repoId={repoId || ''} 
+          developerId={developerId}
           selected={selectedMetricType} 
         />
       </div>
       
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
+      <div className="bg-white p-6 rounded-lg border border-gray-200 max-w-full overflow-hidden">
         {selectedMetricType === 'pr-timeline' ? (
-          <PRTimelineChart data={metricData} />
+          <PRTimelineChart data={pullRequests} />
         ) : selectedMetricType === 'code-frequency' ? (
           <EmptyMetricView metricName="Code Frequency" />
         ) : selectedMetricType === 'contribution-ratio' ? (
           <EmptyMetricView metricName="Contribution Ratio" />
-        ) : (
+        ) : selectedMetricType === 'developer-activity' ? (
           <EmptyMetricView metricName="Developer Activity" />
+        ) : (
+          <EmptyMetricView metricName="Unknown Metric" />
         )}
       </div>
     </div>
