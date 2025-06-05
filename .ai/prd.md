@@ -1,98 +1,99 @@
-# Dokument wymagań produktu (PRD) - Dashboard aktywności deweloperskiej na GitHub
-## 1. Przegląd produktu
-Dashboard aktywności deweloperskiej na GitHub to aplikacja webowa umożliwiająca przegląd raportów aktywności deweloperów na repozytoriach GitHub. Aplikacja oferuje wizualizację historii Pull Requestów w formie poziomej osi czasu, gdzie każdy PR jest reprezentowany jako pasek o określonym statusie (otwarty, zmergowany, anulowany). System integruje się z GitHub REST API przy użyciu tokena oraz wykorzystuje mechanizmy cachowania i automatycznego odświeżania, aby zapewnić szybki dostęp do danych. Lista repozytoriów jest statyczna i zahardcodowana, a interfejs umożliwia wybór dewelopera i wyświetlanie szczegółowych informacji po najechaniu kursorem.
+# Product Requirements Document (PRD) - GitHub Developer Activity Dashboard
 
-## 2. Problem użytkownika
-Użytkownicy, tacy jak menedżerowie i liderzy zespołów, potrzebują narzędzia umożliwiającego szybkie i przejrzyste monitorowanie aktywności deweloperów. Kluczowym problemem jest ocena, ile czasu zajmuje deweloperowi zebranie approvali, wprowadzenie poprawek, adresacja przekazanego feedbacku oraz zmergowanie Pull Requesta. Brak takiego narzędzia utrudnia identyfikację wąskich gardeł w procesie przeglądu kodu i wpływa na efektywność zespołu.
+## 1. Product Overview
+The GitHub Developer Activity Dashboard is a web application that enables viewing developer activity reports on GitHub repositories. The application offers visualization of Pull Request history in the form of a horizontal timeline, where each PR is represented as a bar with a specific status (open, merged, cancelled). The system integrates with GitHub REST API using a token and utilizes caching mechanisms and automatic refresh to ensure fast data access. The repository list is static and hardcoded, and the interface allows developer selection and detailed information display on hover.
 
-## 3. Wymagania funkcjonalne
-1. Lista statycznych repozytoriów - system powinien wyświetlać listę repozytoriów wraz z nazwą i URL.
-2. Wybór dewelopera - użytkownik powinien móc wybrać dewelopera z listy przypisanej do danego repozytorium.
-3. Serwis musi mieć mozliwość wyswietlanie roznych metryk. Na MVP wystarczy 1 metryka tj. wizualizacja pull requestów, ale musi być mozliwosc zmiany widoku w UI na inną metrykę.
-3. Oś czasu - wizualizacja Pull Requestów jako poziome paski z oznaczeniem statusu:
-   - Otwarte
-   - Zmergowane
-   - Anulowane
-4. Szczegóły PR - po najechaniu kursorem na element osi czasu, powinna pojawiać się informacja o:
-   - Użytkowniku, który wykonał akcję
-   - Identyfikatorze komentarza lub approval
-5. Integracja z GitHub REST API - pobieranie danych dotyczących Pull Requestów i powiązanych zdarzeń (commity, komentarze, approvale) przy użyciu tokena.
-6. Mechanizm cachowania - backend powinien cachować pobrane dane oraz automatycznie odświeżać informacje w określonych interwałach.
-7. Interfejs użytkownika:
-   - Wyświetlanie progress baru podczas pobierania danych.
-   - Obsługa błędów z wyświetleniem czytelnych komunikatów.
+## 2. User Problem
+Users, such as managers and team leaders, need a tool that enables quick and transparent monitoring of developer activity. The key problem is assessing how long it takes a developer to gather approvals, introduce fixes, address provided feedback, and merge a Pull Request. The lack of such a tool makes it difficult to identify bottlenecks in the code review process and affects team efficiency.
 
-## 4. Granice produktu
-1. MVP nie obejmuje zaawansowanych metryk analitycznych.
-2. Lista repozytoriów jest statyczna i nie można jej dodawać lub modyfikować przez użytkownika.
-3. Interakcje ograniczają się do wyboru dewelopera, przeglądania osi czasu oraz wyświetlania szczegółów PR przy najechaniu kursorem.
-4. Brak możliwości modyfikacji danych - aplikacja pełni funkcję tylko do przeglądu.
-5. Projekt nie wymaga implementacji mechanizmu uwiezytalniania uzytkowników. Strona bedzie hostowana na Github Pages gdzie jest kontrolwa dostepu na poziomie ustawienia repozytorium. 
+## 3. Functional Requirements
+1. Static repository list - the system should display a list of repositories with name and URL.
+2. Developer selection - the user should be able to select a developer from the list assigned to a given repository.
+3. The service must have the ability to display different metrics. For MVP, 1 metric is sufficient (pull request visualization), but there must be the possibility to change the view in the UI to another metric.
+4. Timeline - visualization of Pull Requests as horizontal bars with status indication:
+   - Open
+   - Merged
+   - Cancelled
+5. PR details - when hovering over a timeline element, information should appear about:
+   - User who performed the action
+   - Comment or approval identifier
+6. GitHub REST API integration - fetching data regarding Pull Requests and related events (commits, comments, approvals) using a token.
+7. Caching mechanism - the backend should cache fetched data and automatically refresh information at specified intervals.
+8. User interface:
+   - Display progress bar during data fetching.
+   - Error handling with clear message display.
 
-## 5. Historyjki użytkowników
+## 4. Product Boundaries
+1. MVP does not include advanced analytical metrics.
+2. The repository list is static and cannot be added or modified by the user.
+3. Interactions are limited to developer selection, timeline browsing, and PR details display on hover.
+4. No data modification capability - the application serves only for review purposes.
+5. The project does not require user authentication mechanism implementation. The page will be hosted on GitHub Pages where access control is at the repository settings level.
+
+## 5. User Stories
 
 ID: US-001
-Tytuł: Wybór repozytorium
-Opis: Jako użytkownik chcę zobaczyć statyczną listę repozytoriów, aby wybrać źródło danych do analizy aktywności.
-Kryteria akceptacji:
-  - Lista repozytoriów zawiera nazwę i URL.
-  - Repozytoria są wyświetlane w czytelnej formie.
-  - Wybór repozytorium aktualizuje dostępne dane dla kolejnych operacji.
+Title: Repository Selection
+Description: As a user, I want to see a static list of repositories to choose a data source for activity analysis.
+Acceptance Criteria:
+  - Repository list contains name and URL.
+  - Repositories are displayed in a readable form.
+  - Repository selection updates available data for subsequent operations.
 
 ID: US-002
-Tytuł: Wybór dewelopera
-Opis: Jako użytkownik chcę wybrać dewelopera powiązanego z wybranym repozytorium, aby móc zobaczyć jego aktywność.
-Kryteria akceptacji:
-  - System wyświetla listę deweloperów po wybraniu repozytorium.
-  - Wybór dewelopera powoduje aktualizację osi czasu z PR.
-  - Lista deweloperów jest czytelna i intuicyjna.
+Title: Developer Selection
+Description: As a user, I want to select a developer associated with the chosen repository to see their activity.
+Acceptance Criteria:
+  - System displays developer list after repository selection.
+  - Developer selection updates the PR timeline.
+  - Developer list is readable and intuitive.
 
 ID: US-003
-Tytuł: Wybór widoku metryki
-Opis: Jako użytkownik chcę mieć mozliwosć przełączania się pomiedzy roznymi metrykami. 
-Kryteria akceptacji:
-  - Dla MVP wystarczy 1 metryka (Os czasu PR)
-  - Istnieje przełącznik w UI do wybory innych metryk
-  - 2 metryka powinna zostaca dodana jako pusta strona
+Title: Metric View Selection
+Description: As a user, I want to have the ability to switch between different metrics.
+Acceptance Criteria:
+  - For MVP, 1 metric is sufficient (PR Timeline)
+  - There is a switcher in the UI to select other metrics
+  - The 2nd metric should be added as an empty page
 
 ID: US-004
-Tytuł: Wizualizacja osi czasu
-Opis: Jako użytkownik chcę widzieć interaktywną oś czasu, gdzie Pull Requesty są prezentowane jako dynamiczne wykresy tworzone przy użyciu biblioteki Chart.js, aby szybko ocenić historię aktywności dewelopera.
-Kryteria akceptacji:
-  - Oś czasu prezentuje PR jako dynamiczne wykresy generowane przy użyciu Chart.js.
-  - Każdy pasek reprezentuje PR i posiada wyraźne oznaczenie statusu (otwarty, zmergowany, anulowany).
-  - Po najechaniu kursorem na wykres, wyświetla się tooltip z dodatkowymi informacjami o PR.
-  - Aktualny punkt na osi jest wyróżniony.
-  - Oś zawiera oznaczenia czasowe dla ważnych zdarzeń.
+Title: Timeline Visualization
+Description: As a user, I want to see an interactive timeline where Pull Requests are presented as dynamic charts created using Chart.js library, to quickly assess developer activity history.
+Acceptance Criteria:
+  - Timeline presents PRs as dynamic charts generated using Chart.js.
+  - Each bar represents a PR and has clear status indication (open, merged, cancelled).
+  - When hovering over a chart, a tooltip with additional PR information is displayed.
+  - Current point on the timeline is highlighted.
+  - Timeline contains time markers for important events.
 
 ID: US-005
-Tytuł: Wyświetlanie szczegółów PR
-Opis: Jako użytkownik chcę, aby po najechaniu kursorem na element osi czasu, wyświetlane były dodatkowe informacje o danym PR, takie jak użytkownik, identyfikator komentarza lub approval.
-Kryteria akceptacji:
-  - Po najechaniu kursorem pojawia się tooltip z dodatkowymi informacjami.
-  - Informacje w tooltipie obejmują dane o użytkowniku oraz identyfikatory komentarzy/approval.
-  - Tooltip nie zakłóca funkcjonalności interfejsu.
+Title: PR Details Display
+Description: As a user, I want additional information about a given PR to be displayed when hovering over a timeline element, such as user, comment identifier, or approval.
+Acceptance Criteria:
+  - A tooltip with additional information appears on hover.
+  - Tooltip information includes user data and comment/approval identifiers.
+  - Tooltip does not interfere with interface functionality.
 
 ID: US-006
-Tytuł: Integracja z GitHub REST API i mechanizm cachowania
-Opis: Jako użytkownik chcę, aby system pobierał dane z GitHub REST API i cachował je, aby zapewnić szybki dostęp i aktualność informacji.
-Kryteria akceptacji:
-  - Aplikacja pobiera dane z GitHub REST API przy użyciu poprawnego tokena.
-  - Dane są cachowane w backendzie.
-  - Automatyczne odświeżanie danych odbywa się według ustalonego interwału.
-  - W przypadku błędu pobierania danych wyświetlany jest komunikat o błędzie.
+Title: GitHub REST API Integration and Caching Mechanism
+Description: As a user, I want the system to fetch data from GitHub REST API and cache it to ensure fast access and information currency.
+Acceptance Criteria:
+  - Application fetches data from GitHub REST API using correct token.
+  - Data is cached in the backend.
+  - Automatic data refresh occurs according to established interval.
+  - In case of data fetching error, an error message is displayed.
 
 ID: US-007
-Tytuł: Obsługa stanu ładowania i błędów
-Opis: Jako użytkownik chcę widzieć wskaźnik ładowania oraz odpowiednie komunikaty o błędach, aby być świadomym stanu systemu podczas pobierania danych.
-Kryteria akceptacji:
-  - Podczas pobierania danych wyświetlany jest progress bar.
-  - W przypadku błędu system prezentuje czytelny komunikat o problemie.
-  - Użytkownik jest informowany o statusie operacji w czasie rzeczywistym.
+Title: Loading State and Error Handling
+Description: As a user, I want to see a loading indicator and appropriate error messages to be aware of system state during data fetching.
+Acceptance Criteria:
+  - Progress bar is displayed during data fetching.
+  - In case of error, system presents clear problem message.
+  - User is informed about operation status in real-time.
 
-## 6. Metryki sukcesu
-1. Dokładność wizualizacji osi czasu – prawidłowe wyświetlanie statusów PR i oznaczeń czasowych.
-2. Średni czas zebrania approvali, wprowadzenia poprawek, adresacji feedbacku oraz zmergowania PR.
-3. Wskaźnik błędów podczas pobierania danych – liczba nieudanych zapytań do GitHub API powinna być minimalna.
-4. Poziom satysfakcji użytkowników – pozytywny feedback dotyczący użyteczności interfejsu.
-5. Szybkość odświeżania danych – automatyczne odświeżanie odbywa się w ustalonych interwałach bez zauważalnych opóźnień. 
+## 6. Success Metrics
+1. Timeline visualization accuracy – correct display of PR statuses and time markers.
+2. Average time for gathering approvals, introducing fixes, addressing feedback, and merging PR.
+3. Error rate during data fetching – number of failed GitHub API requests should be minimal.
+4. User satisfaction level – positive feedback regarding interface usefulness.
+5. Data refresh speed – automatic refresh occurs at established intervals without noticeable delays. 

@@ -14,3 +14,11 @@ export const supportedRepositories: RepositoryData[] = [
         url: "https://github.com/tailwindlabs/tailwindcss",
     }
 ]
+
+// export const supportedRepositories: RepositoryData[] = [
+//     {
+//         id: "1",
+//         url: "https://github.com/paramount-streaming/paramount-kepler",
+//     },
+    
+// ]

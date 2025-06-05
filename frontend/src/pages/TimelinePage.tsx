@@ -51,7 +51,7 @@ const TimelinePage: React.FC = () => {
         setLoading(true);
         setError(null);
         
-        // Ładowanie danych dewelopera i PR równolegle
+        // Load developer and PR data in parallel
         const [developerData, pullRequestsData] = await Promise.all([
           fetchDeveloperById(repoId, developerId),
           fetchDeveloperPullRequests(repoId, developerId)

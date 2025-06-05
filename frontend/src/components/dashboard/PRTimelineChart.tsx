@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   Chart as ChartJS,
   TimeScale,
@@ -26,59 +26,67 @@ ChartJS.register(
   Legend
 );
 
+interface TimelinePoint {
+  x: string;
+  y: number;
+  eventType: string;
+  pr: PullRequestData;
+  details: string;
+}
+
 interface PRTimelineChartProps {
   data: PullRequestData[];
 }
 
-// Mapowanie statusów na kolory
+// Status to color mapping
 const getStatusColor = (event: string) => {
   switch (event) {
-    case 'created': return '#3B82F6'; // niebieski
-    case 'comment': return '#F59E0B'; // żółty
-    case 'approval': return '#10B981'; // zielony
-    case 'commit': return '#8B5CF6'; // fioletowy  
-    case 'merged': return '#059669'; // ciemnozielony
-    case 'closed': return '#EF4444'; // czerwony
-    default: return '#6B7280'; // szary
+    case 'created': return '#3B82F6'; // blue
+    case 'comment': return '#F59E0B'; // yellow
+    case 'approval': return '#10B981'; // green
+    case 'commit': return '#8B5CF6'; // purple  
+    case 'merged': return '#059669'; // dark green
+    case 'closed': return '#EF4444'; // red
+    default: return '#6B7280'; // gray
   }
 };
 
-// Funkcja do tworzenia punktów czasowych dla PR
+// Function to create timeline points for PR
 const createTimelinePoints = (pr: PullRequestData, prIndex: number) => {
   const points = [];
   
-  // Punkt utworzenia PR
+  // PR creation point
   points.push({
     x: pr.createdAt,
     y: prIndex,
     eventType: 'created',
     pr: pr,
-    details: `PR #${pr.number} utworzone`
+    details: `PR #${pr.number} created`
   });
 
-  // Punkty komentarzy
+  // Comment points
   pr.commentsTimeline.forEach(comment => {
     points.push({
       x: comment.date,
       y: prIndex,
       eventType: 'comment',
       pr: pr,
-      details: `Komentarz od ${comment.authorLogin}`
+      details: `Comment by ${comment.authorLogin}`
     });
   });
 
-  // Punkty approval
+  // Approval points
   pr.approvalsTimeline.forEach(approval => {
     points.push({
       x: approval.date,
       y: prIndex,
       eventType: 'approval',
       pr: pr,
-      details: `Approval od ${approval.authorLogin}`
+      details: `Approval by ${approval.authorLogin}`
     });
   });
 
-  // Punkty commitów
+  // Commit points
   pr.commitsTimeline.forEach(commit => {
     points.push({
       x: commit.date,
@@ -89,14 +97,14 @@ const createTimelinePoints = (pr: PullRequestData, prIndex: number) => {
     });
   });
 
-  // Punkt zamknięcia/zmergowania
+  // Closure/merge point
   if (pr.mergedAt) {
     points.push({
       x: pr.mergedAt,
       y: prIndex,
       eventType: 'merged',
       pr: pr,
-      details: `PR #${pr.number} zmergowane`
+      details: `PR #${pr.number} merged`
     });
   } else if (pr.closedAt) {
     points.push({
@@ -104,7 +112,7 @@ const createTimelinePoints = (pr: PullRequestData, prIndex: number) => {
       y: prIndex,
       eventType: 'closed',
       pr: pr,
-      details: `PR #${pr.number} zamknięte`
+      details: `PR #${pr.number} closed`
     });
   }
 
@@ -122,17 +130,17 @@ const PRTimelineChart: React.FC<PRTimelineChartProps> = ({ data }) => {
     };
   }, []);
 
-  // Przygotowanie etykiet dla osi Y (nazwy PR) - odwrócona kolejność dla poprawnego wyświetlania
+  // Prepare Y-axis labels (PR names) - reversed order for proper display
   const prLabels = data.map(pr => `#${pr.number}: ${pr.title.substring(0, 25)}...`).reverse();
   
-  // Grupowanie punktów według typu zdarzenia
+  // Group points by event type
   const eventGroups = ['created', 'comment', 'approval', 'commit', 'merged', 'closed'];
   const datasets: any[] = [];
 
-  // Datasets dla każdego typu zdarzenia (bez linii PR w tle)
+  // Datasets for each event type (without PR background lines)
   eventGroups.forEach(eventType => {
     const eventPoints = data.flatMap((pr, index) => 
-      // Odwracamy indeks aby był zgodny z odwróconą kolejnością etykiet
+      // Reverse index to match reversed label order
       createTimelinePoints(pr, data.length - 1 - index).filter(point => point.eventType === eventType)
     );
 
@@ -150,7 +158,7 @@ const PRTimelineChart: React.FC<PRTimelineChartProps> = ({ data }) => {
     }
   });
 
-  // Obliczenie zakresu czasowego (1 miesiąc wstecz od teraz)
+  // Calculate time range (1 month back from now)
   const now = new Date();
   const oneMonthAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
 
@@ -178,7 +186,7 @@ const PRTimelineChart: React.FC<PRTimelineChartProps> = ({ data }) => {
         max: now.toISOString(),
         title: {
           display: true,
-          text: 'Data'
+          text: 'Date'
         },
         grid: {
           display: true,
@@ -194,7 +202,7 @@ const PRTimelineChart: React.FC<PRTimelineChartProps> = ({ data }) => {
           stepSize: 0.5,
           callback: function(value: any) {
             const numValue = Number(value);
-            // Sprawdź czy wartość jest o 0.5 wyżej od liczby całkowitej (np. 0.5, 1.5, 2.5...)
+            // Check if value is 0.5 higher than integer (e.g. 0.5, 1.5, 2.5...)
             const index = Math.floor(numValue);
             if (Math.abs(numValue - (index + 0.5)) < 0.1 && index >= 0 && index < prLabels.length) {
               return prLabels[index];
@@ -218,7 +226,7 @@ const PRTimelineChart: React.FC<PRTimelineChartProps> = ({ data }) => {
       },
       title: {
         display: true,
-        text: 'Timeline Pull Requestów'
+        text: 'Pull Requests Timeline'
       },
       tooltip: {
         callbacks: {
@@ -241,13 +249,13 @@ const PRTimelineChart: React.FC<PRTimelineChartProps> = ({ data }) => {
             if (point?.pr) {
               const pr = point.pr;
               const info = [];
-              info.push(`Autor: ${pr.authorLogin}`);
-              info.push(`Status: ${pr.merged ? 'Zmergowane' : pr.state === 'open' ? 'Otwarte' : 'Zamknięte'}`);
+              info.push(`Author: ${pr.authorLogin}`);
+              info.push(`Status: ${pr.merged ? 'Merged' : pr.state === 'open' ? 'Open' : 'Closed'}`);
               if (pr.commentsTimeline.length > 0) {
-                info.push(`Komentarze: ${pr.commentsTimeline.length}`);
+                info.push(`Comments: ${pr.commentsTimeline.length}`);
               }
               if (pr.approvalsTimeline.length > 0) {
-                info.push(`Approvale: ${pr.approvalsTimeline.length}`);
+                info.push(`Approvals: ${pr.approvalsTimeline.length}`);
               }
               return info;
             }
@@ -255,16 +263,16 @@ const PRTimelineChart: React.FC<PRTimelineChartProps> = ({ data }) => {
           }
         }
       }
-    },
-    interaction: {
-      mode: 'nearest' as const,
-      intersect: false
     }
   };
 
+  const chartData = {
+    datasets: datasets
+  };
+
   return (
-    <div className="w-full h-[400px] max-w-full overflow-hidden">
-      <Scatter ref={chartRef} options={options} data={{ datasets }} />
+    <div style={{ position: 'relative', height: '600px', width: '100%' }}>
+      <Scatter ref={chartRef} data={chartData} options={options} />
     </div>
   );
 };

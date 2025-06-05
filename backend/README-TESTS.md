@@ -1,153 +1,123 @@
-# Testy jednostkowe - Backend
+# Tests
 
-Ten projekt używa **Jest** z **TypeScript** do testów jednostkowych.
+This project uses **Jest** with **TypeScript** for unit testing.
 
-## Struktura testów
+## Test Structure
 
 ```
 backend/
+│
 ├── src/
-│   ├── __tests__/           # Globalne narzędzia testowe
-│   │   └── test-utils.ts    # Pomocnicze funkcje do testów
+│   ├── __tests__/           # Global test tools
+│   │   └── test-utils.ts    # Helper functions for tests
+│   │
 │   ├── controllers/
-│   │   ├── __tests__/       # Testy kontrolerów
-│   │   │   └── *.test.ts
-│   │   └── *.ts
-│   └── ...
-├── jest.config.js           # Konfiguracja Jest
-└── coverage/               # Raporty pokrycia kodu (generowane automatycznie)
+│   │   ├── __tests__/       # Controller tests
+│   │   │   └── githubController.test.ts
+│   │
+│   ├── services/
+│   │   ├── __tests__/       # Service tests
+│   │   │   └── githubService.test.ts
 ```
 
-## Uruchamianie testów
-
-### Podstawowe komendy
+## Running Tests
 
 ```bash
-# Uruchom wszystkie testy
+# Run all tests
 npm test
 
-# Uruchom testy w trybie watch (automatyczne przeładowanie)
+# Run tests in watch mode (automatic reload)
 npm run test:watch
 
-# Uruchom testy z raportem pokrycia kodu
+# Run tests with coverage
 npm run test:coverage
 ```
 
-### Zainstaluj zależności (jeśli jeszcze nie zainstalowane)
-
+### Install dependencies (if not already installed)
 ```bash
 npm install
 ```
 
-## Przykład testu
+## Test Example
 
 ```typescript
-import { Request, Response } from 'express';
-import { HealthController } from '../health-controller.js';
-import { createMockRequest, createMockResponse } from '../../__tests__/test-utils.js';
+import request from 'supertest';
+import { app } from '../app';
 
-describe('HealthController', () => {
-  let controller: HealthController;
-  let mockRequest: Request;
-  let mockResponse: Response;
+describe('GET /api/repositories', () => {
+  it('should return a list of repositories', async () => {
+    const response = await request(app)
+      .get('/api/repositories')
+      .expect(200);
 
-  beforeEach(() => {
-    controller = new HealthController();
-    mockRequest = createMockRequest();
-    mockResponse = createMockResponse();
-  });
-
-  it('should return health status', async () => {
-    // Act
-    await controller.getHealth(mockRequest, mockResponse);
-
-    // Assert
-    expect(mockResponse.status).toHaveBeenCalledWith(200);
-    expect(mockResponse.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        success: true,
-        data: expect.objectContaining({
-          status: 'ok'
-        })
-      })
-    );
+    expect(response.body).toHaveProperty('length');
+    expect(response.body[0]).toHaveProperty('id');
+    expect(response.body[0]).toHaveProperty('name');
+    expect(response.body[0]).toHaveProperty('url');
   });
 });
-```
 
-## Narzędzia testowe
+describe('GET /api/repositories/:repoId/developers', () => {
+  it('should return developers for a specific repository', async () => {
+    const repoId = 'test-repo';
+    
+    const response = await request(app)
+      .get(`/api/repositories/${repoId}/developers`)
+      .expect(200);
 
-### Test Utils (`src/__tests__/test-utils.ts`)
-
-- `createMockRequest(options?)` - Tworzy mock obiektu Express Request
-- `createMockResponse()` - Tworzy mock obiektu Express Response  
-- `expectApiResponse(response, status, data)` - Pomocnik do sprawdzania odpowiedzi API
-
-## Konfiguracja
-
-### Jest (`jest.config.js`)
-
-- **Preset**: `ts-jest/presets/default-esm` - Obsługa TypeScript z ESM
-- **Test Environment**: `node` - Środowisko Node.js
-- **Coverage**: Automatyczne raporty pokrycia kodu
-- **Test Match**: `**/__tests__/**/*.test.ts` i `**/*.test.ts`
-
-### Pokrycie kodu
-
-Raporty pokrycia są generowane w katalogu `coverage/`:
-- `coverage/lcov-report/index.html` - Raport HTML
-- `coverage/lcov.info` - Format LCOV
-- Terminal - Szybki przegląd w konsoli
-
-## Dobre praktyki
-
-1. **Nazewnictwo**: Pliki testów powinny kończyć się na `.test.ts`
-2. **Struktura**: Grupuj testy w `describe` bloki
-3. **Arrange-Act-Assert**: Używaj tej struktury w testach
-4. **Mocking**: Używaj mocków dla zewnętrznych zależności
-5. **Czytelność**: Opisowe nazwy testów
-6. **Izolacja**: Każdy test powinien być niezależny
-
-## Przykładowe scenariusze testowe
-
-### Kontrolery Express
-
-```typescript
-it('should return 400 for invalid input', async () => {
-  // Arrange
-  const invalidRequest = createMockRequest({ body: {} });
-  
-  // Act
-  await controller.create(invalidRequest, mockResponse);
-  
-  // Assert
-  expect(mockResponse.status).toHaveBeenCalledWith(400);
+    expect(response.body).toBeInstanceOf(Array);
+    if (response.body.length > 0) {
+      expect(response.body[0]).toHaveProperty('id');
+      expect(response.body[0]).toHaveProperty('name');
+      expect(response.body[0]).toHaveProperty('email');
+    }
+  });
 });
 ```
 
-### Serwisy
+## Test Tools
 
-```typescript
-it('should handle service errors gracefully', async () => {
-  // Arrange
-  const mockService = jest.fn().mockRejectedValue(new Error('Service error'));
-  
-  // Act & Assert
-  await expect(service.getData()).rejects.toThrow('Service error');
-});
+The project uses the following configuration:
+
+```json
+{
+  "preset": "ts-jest/presets/default-esm",
+  "testEnvironment": "node",
+  "extensionsToTreatAsEsm": [".ts"],
+  "globals": {
+    "ts-jest": {
+      "useESM": true
+    }
+  }
+}
 ```
 
-### Async/Await
+- **Preset**: `ts-jest/presets/default-esm` - TypeScript support with ESM
+- **Test Environment**: `node` - Node.js environment
 
-```typescript
-it('should handle async operations', async () => {
-  // Arrange
-  const expectedData = { id: 1, name: 'Test' };
-  
-  // Act
-  const result = await service.fetchData();
-  
-  // Assert
-  expect(result).toEqual(expectedData);
-});
-``` 
+## Coverage
+
+Coverage reports are generated automatically when you run:
+```bash
+npm run test:coverage
+```
+
+Coverage reports are generated in the `coverage/` directory:
+- **HTML** - Open `coverage/lcov-report/index.html` in browser
+- **Terminal** - Quick overview in console
+
+## Best Practices
+
+1. **Naming**: Test files should end with `.test.ts`
+2. **Organization**: Group tests by functionality
+3. **Arrange-Act-Assert**: Use this structure in tests
+4. **Mocking**: Use mocks for external dependencies
+5. **Readability**: Descriptive test names
+6. **Isolation**: Each test should be independent
+
+## Example Test Scenarios
+
+- API endpoint testing
+- Service logic testing
+- Error handling testing
+- Data validation testing 
